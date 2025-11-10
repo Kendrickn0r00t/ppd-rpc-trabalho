@@ -1,0 +1,74 @@
+// miner.proto
+
+syntax = "proto3";
+
+// Mensagem vazia para requisições que não precisam de parâmetros
+message Empty {}
+
+// Mensagem para requisições que enviam um TransactionID
+message TransactionRequest {
+  int32 transactionID = 1;
+}
+
+// Mensagem para submeter uma solução
+message SubmitRequest {
+  int32 transactionID = 1;
+  int32 clientID = 2;
+  string solution = 3;
+}
+
+// Respostas simples
+message TransactionIDResponse {
+  int32 transactionID = 1;
+}
+
+message ChallengeResponse {
+  int32 challenge = 1;
+}
+
+message StatusResponse {
+  int32 status = 1; // 1=pendente, 0=resolvido, -1=inválido
+}
+
+message SubmitResponse {
+  int32 status = 1; // 1=válida, 0=inválida, 2=já solucionado, -1=inválido
+}
+
+message WinnerResponse {
+  int32 clientID = 1; // -1=inválido, 0=sem vencedor, >0=vencedor
+}
+
+// Mensagem para getSolution (retorna uma tupla)
+message SolutionResponse {
+  int32 status = 1;    // 1=OK, -1=inválido
+  string solution = 2;
+  int32 challenge = 3;
+}
+
+
+// Definição do serviço Miner
+service Miner {
+  // Nome: getTransactionID()
+  // Retorna o valor atual <int> da transação com desafio pendente.
+  rpc GetTransactionID(Empty) returns (TransactionIDResponse) {}
+
+  // Nome: getChallenge()
+  // Retorna o valor do desafio. Retorne -1 se o transactionID for inválido.
+  rpc GetChallenge(TransactionRequest) returns (ChallengeResponse) {}
+
+  // Nome: getTransactionStatus()
+  // Retorna 0 (resolvido), 1 (pendente), -1 (inválido).
+  rpc GetTransactionStatus(TransactionRequest) returns (StatusResponse) {}
+
+  // Nome: submitChallenge()
+  // Retorna 1 (válida), 0 (inválida), 2 (já solucionado), -1 (inválido).
+  rpc SubmitChallenge(SubmitRequest) returns (SubmitResponse) {}
+
+  // Nome: getWinner()
+  // Retorna clientID, 0 (sem vencedor), -1 (inválido).
+  rpc GetWinner(TransactionRequest) returns (WinnerResponse) {}
+
+  // Nome: getSolution()
+  // Retorna (status, solução, desafio).
+  rpc GetSolution(TransactionRequest) returns (SolutionResponse) {}
+}

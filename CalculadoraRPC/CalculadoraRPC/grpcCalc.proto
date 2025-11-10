@@ -1,0 +1,22 @@
+// grpcCalc.proto
+
+syntax = "proto3";
+
+// Mensagem para enviar os dois números
+message Operands {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+// Mensagem para enviar o resultado
+message Result {
+  int32 value = 1;
+}
+
+// Definição do serviço
+service Calculator {
+  rpc Add(Operands) returns (Result) {}
+  rpc Sub(Operands) returns (Result) {}
+  rpc Mul(Operands) returns (Result) {}
+  rpc Div(Operands) returns (Result) {}
+}
